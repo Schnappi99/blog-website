@@ -6,7 +6,7 @@ permissions:
   contents: write
   pull-requests: write
 
-# Run workflow when a `.bib` file is added or updated in the `data/` folder
+# Run workflow when a Jupyter Notebook (`.ipynb` file) is added or updated in the `notebooks/` folder
 on:
   push:
     branches: ['main']
@@ -17,7 +17,6 @@ on:
 
 jobs:
   hugoblox:
-    if: github.repository_owner != 'HugoBlox'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repo
@@ -32,6 +31,12 @@ jobs:
           pip install academic==0.11.2
       - name: Run Academic Converter Tool
         run: academic import 'notebooks/*.ipynb' content/post/ --verbose
+      - name: Set up Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.126.3'
+      - name: Build Hugo site
+        run: hugo --minify
       - name: Create Pull Request
         # Set ID for `Check outputs` stage
         id: cpr
